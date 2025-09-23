@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prom-agent-config
+  namespace: prometheus
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      external_labels:
+        cluster: "onprem-lab"
+
+    scrape_configs:
+      - job_name: 'node-exporter'
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names: ['prometheus']
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_endpoints_name]
+            regex: node-exporter
+            action: keep
+          - source_labels: [__meta_kubernetes_endpoint_port_name]
+            regex: metrics
+            action: keep
+
+    remote_write:
+      - url: "http://prometheus-central-lb.prometheus.svc.cluster.local:9090/api/v1/write"
+        queue_config:
+          max_samples_per_send: 1000
+          max_shards: 4
+          capacity: 10000
+
