@@ -27,7 +27,7 @@ spec:
               containerPort: 3000
           env:
             - name: GF_SECURITY_ADMIN_PASSWORD
-              value: admin
+              value: asdf
           readinessProbe:
             httpGet: { path: /login, port: 3000 }
             initialDelaySeconds: 10
