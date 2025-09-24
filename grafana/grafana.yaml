@@ -41,11 +41,10 @@ metadata:
   namespace: prometheus
   labels: { app: grafana }
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector: { app: grafana }
   ports:
     - name: http
       port: 3000
       targetPort: 3000
-      nodePort: 32000   # 30000~32767 범위에서 고르면 됨
 
