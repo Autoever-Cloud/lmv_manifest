@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-kafka-connect
+  namespace: default
+  labels:
+    app: my-kafka-connect
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-kafka-connect
+  template:
+    metadata:
+      labels:
+        app: my-kafka-connect
+    spec:
+      tolerations:
+      - key: "kafka-connect-node"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+      containers:
+      - name: kafka-connect
+        image: jiwon000/my-kafka-connect-es:1.0
+        ports:
+        - containerPort: 8083
+        volumeMounts:
+        - name: es-truststore-volume
+          mountPath: "/etc/kafka/secrets"
+          readOnly: true
+        env:
+        - name: KAFKA_OPTS
+          value: "-Djavax.net.ssl.trustStore=/etc/kafka/secrets/truststore.jks -Djavax.net.ssl.trustStorePassword=j4s-password"
+        - name: CONNECT_BOOTSTRAP_SERVERS
+          value: "192.168.1.210:9094"
+        - name: CONNECT_REST_ADVERTISED_HOST_NAME
+          value: "my-kafka-connect"
+        - name: CONNECT_REST_PORT
+          value: "8083"
+        - name: CONNECT_GROUP_ID
+          value: "my-connect-group"
+        - name: CONNECT_CONFIG_STORAGE_TOPIC
+          value: "my_connect_configs"
+        - name: CONNECT_OFFSET_STORAGE_TOPIC
+          value: "my_connect_offsets"
+        - name: CONNECT_STATUS_STORAGE_TOPIC
+          value: "my_connect_statuses"
+        - name: CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR
+          value: "1"
+        - name: CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR
+          value: "1"
+        - name: CONNECT_STATUS_STORAGE_REPLICATION_FACTOR
+          value: "1"
+        - name: CONNECT_KEY_CONVERTER
+          value: "org.apache.kafka.connect.json.JsonConverter"
+        - name: CONNECT_VALUE_CONVERTER
+          value: "org.apache.kafka.connect.json.JsonConverter"
+        - name: CONNECT_PLUGIN_PATH
+          value: "/usr/share/java,/usr/share/confluent-hub-components"
+      volumes:
+      - name: es-truststore-volume
+        secret:
+          secretName: es-truststore-secret

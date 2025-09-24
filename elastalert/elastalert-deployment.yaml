@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elastalert
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elastalert
+  template:
+    metadata:
+      labels:
+        app: elastalert
+    spec:
+      containers:
+      - name: elastalert
+        image: jertel/elastalert2:2.10.0 # ElastAlert2 도커 이미지
+        args: ["--verbose"]
+        
+        env:
+        - name: ES_PASSWORD  # 컨테이너에 설정될 환경 변수 이름
+          valueFrom:
+            secretKeyRef:
+              name: es-password-secret # 우리가 만든 Secret의 이름
+              key: es_password      # Secret 안의 데이터 키 이름
+        
+        volumeMounts:
+        # ConfigMap을 Pod 내부의 /opt/elastalert/config.yaml 파일로 마운트
+        - name: config-volume
+          mountPath: /opt/elastalert/config.yaml
+          subPath: config.yaml
+        # ConfigMap을 Pod 내부의 /opt/elastalert/rules 폴더로 마운트
+        - name: rules-volume
+          mountPath: /opt/elastalert/rules
+      volumes:
+      - name: config-volume
+        configMap:
+          name: elastalert-config
+          items:
+            - key: config.yaml
+              path: config.yaml
+      - name: rules-volume
+        configMap:
+          name: elastalert-config
+           # items 키를 사용해 규칙 파일만 선택적으로 마운트합니다.
+          items:
+            - key: service_error_rule.yaml
+              path: service_error_rule.yaml
+            # (나중에 규칙을 추가하면 여기에 계속 추가하면 됩니다)
+      # ------------------------------------

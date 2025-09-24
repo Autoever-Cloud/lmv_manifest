@@ -1,0 +1,21 @@
+{
+  "name": "es-sink-connector",
+  "config": {
+    "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+    "tasks.max": "1",
+    "topics": "service-topic", 
+
+    "connection.url": "https://es-cluster-es-http:9200",
+    "connection.username": "elastic",
+    "connection.password": "3976Uf7mOxMW6Ay7m30hcG7F",
+
+    "ssl.truststore.location": "/etc/kafka/secrets/truststore.jks",
+    "ssl.truststore.password": "j4s-password",
+    "ssl.keystore.type": "JKS",
+    "ssl.verification.mode": "full",
+
+    "type.name": "_doc",
+    "key.ignore": "true",
+    "schema.ignore": "true"
+  }
+}

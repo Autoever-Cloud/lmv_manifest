@@ -5,7 +5,7 @@ metadata:
   name: lmv-pool
 spec:
   addresses:
-    - 172.31.45.200-172.31.45.220  # on-premise에서는 NAT네트워크 대역으로 수정!!
+    - 192.168.1.230-192.168.1.240
 ---
 apiVersion: metallb.io/v1beta1
 kind: L2Advertisement
