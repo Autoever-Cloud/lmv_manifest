@@ -46,5 +46,9 @@ spec:
           items:
             - key: service_error_rule.yaml
               path: service_error_rule.yaml
+            - key: system_auth_fail_rule.yaml
+              path: system_auth_fail_rule.yaml
+            - key: system_kmsg_error_rule.yaml
+              path: system_kmsg_error_rule.yaml
             # (나중에 규칙을 추가하면 여기에 계속 추가하면 됩니다)
       # ------------------------------------
